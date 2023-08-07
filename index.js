@@ -1,65 +1,50 @@
-const slides = document.querySelectorAll(".slider__slide");
+// const slides = document.querySelectorAll(".slider__slide");
 const btns = document.querySelectorAll(".btn");
+const slider = document.querySelectorAll(".slider  img");
+const slider_cont = document.querySelector(".slider");
+const nav = document.querySelector(".navigation");
 
+let btnArray = [];
 let currentSlide = 0;
+let slideWidth = slider[0].clientWidth;
 
-const showSlide = () => {
-  slides.forEach((slide, index) => {
-    if (index === currentSlide) {
-      slide.classList.add("active");
-      btns[index].classList.add("btn--active");
-    } else {
-      slide.classList.remove("active");
-      btns[index].classList.remove("btn--active");
-    }
+function updateSlide() {
+  slider_cont.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+
+  btnArray.forEach((btn, index) => {
+    btn.classList.toggle("btn--active", currentSlide == index);
   });
-};
+}
 
 const nextSlide = () => {
-  currentSlide = (currentSlide + 1) % slides.length;
-  showSlide();
+  currentSlide = (currentSlide + 1) % slider.length;
+  updateSlide();
 };
 
 const prevSlide = () => {
-  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-  showSlide();
+  currentSlide = (currentSlide - 1 + slider.length) % slider.length;
+  updateSlide();
 };
 
-btns.forEach((btn, index) => {
-  btn.addEventListener("click", () => {
-    currentSlide = index;
-    showSlide();
+function init() {
+  intervalId = setInterval(nextSlide, 3000);
+
+  slider.forEach((slide, index) => {
+    let buttons = document.createElement("div");
+    buttons.classList.add("btn");
+    buttons.addEventListener("click", () => {
+      currentSlide = index;
+      updateSlide();
+      clearInterval(intervalId);
+      intervalId = setInterval(nextSlide, 3000);
+    });
+    console.log(currentSlide);
+
+    nav.appendChild(buttons);
+    btnArray.push(buttons);
   });
-});
-
-setInterval(nextSlide, 5000);
-
-showSlide();
-
-// For image slider AUTOPLAY navigation
-var repeat = function (activeClass) {
-  let active = document.getElementsByClassName("active");
-  let i = 1;
-
-  var slider = () => {
-    setTimeout(function () {
-      [...active].forEach((activeSlide) => {
-        activeSlide.classList.remove("active");
-      });
-
-      slides[i].classList.add("active");
-      btns[i].classList.add("active");
-      i++;
-
-      if (slides.length == i) {
-        i = 0;
-      }
-      if (i >= slides.length) {
-        return;
-      }
-      slider();
-    }, 5000);
-  };
-  slider();
-};
-repeat();
+  console.log(btnArray);
+  console.log("hello");
+  updateSlide();
+}
+init();
